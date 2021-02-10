@@ -1,11 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
-import 'whatwg-fetch';
-import { SelectField, Spinner, Option } from '@contentful/forma-36-react-components';
-import { init } from 'contentful-ui-extensions-sdk';
-import '@contentful/forma-36-react-components/dist/styles.css';
-import './index.css';
+import React from "react";
+import PropTypes from "prop-types";
+import ReactDOM from "react-dom";
+import "whatwg-fetch";
+import {
+  SelectField,
+  Spinner,
+  Option,
+} from "@contentful/forma-36-react-components";
+import { init } from "contentful-ui-extensions-sdk";
+import "@contentful/forma-36-react-components/dist/styles.css";
+import "./index.css";
 
 class App extends React.Component {
   static propTypes = {
@@ -20,7 +24,7 @@ class App extends React.Component {
       value: props.sdk.field.getValue(),
       error: false,
       hasLoaded: false,
-      items: []
+      jobPosts: [],
     };
   }
 
@@ -29,22 +33,23 @@ class App extends React.Component {
 
     // Handler for external field value changes (e.g. when multiple authors are working on the same entry).
     this.detachExternalChangeHandler = this.props.sdk.field.onValueChanged(
-      this.onExternalChange
+      this.onExternalChangep
     );
 
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then(res => res.json())
+    // fetch("https://jsonplaceholder.typicode.com/users")
+    fetch("https://api.lever.co/v0/postings/cloud-nine?mode=json")
+      .then((res) => res.json())
       .then(
-        (items) => {
+        (jobPosts) => {
           this.setState({
             hasLoaded: true,
-            items
+            jobPosts,
           });
         },
         (error) => {
           this.setState({
             hasLoaded: true,
-            error: error
+            error: error,
           });
         }
       );
@@ -56,11 +61,11 @@ class App extends React.Component {
     }
   }
 
-  onExternalChange = value => {
+  onExternalChange = (value) => {
     this.setState({ value });
   };
 
-  onChange = e => {
+  onChange = (e) => {
     const value = e.currentTarget.value;
     this.setState({ value });
     if (value) {
@@ -77,24 +82,28 @@ class App extends React.Component {
 
     return (
       <SelectField
-        id="names"
-        name="names"
-        labelText="Select name"
+        id="jobPosts"
+        name="jobPosts"
+        labelText="Select job post"
         helpText="Get dummy user data from an external API"
         value={this.state.value}
         onChange={this.onChange}
       >
-        <Option value="">Pick a user</Option>
-        {this.state.items.map(item => {
-          return <Option key={item.id} value={item.id.toString()}>{item.name}</Option>
+        <Option value="">Pick a Lever Job Post</Option>
+        {this.state.jobPosts.map((jobPost) => {
+          return (
+            <Option key={jobPost.id} value={jobPost.id.toString()}>
+              {jobPost.text}
+            </Option>
+          );
         })}
       </SelectField>
     );
   }
 }
 
-init(sdk => {
-  ReactDOM.render(<App sdk={sdk} />, document.getElementById('root'));
+init((sdk) => {
+  ReactDOM.render(<App sdk={sdk} />, document.getElementById("root"));
 });
 
 // Enabling hot reload
