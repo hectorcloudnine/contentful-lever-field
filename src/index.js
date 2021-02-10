@@ -85,7 +85,7 @@ class App extends React.Component {
         id="jobPosts"
         name="jobPosts"
         labelText="Select job post"
-        helpText="Get dummy user data from an external API"
+        helpText="Get job posts from the Lever API"
         value={this.state.value}
         onChange={this.onChange}
       >
